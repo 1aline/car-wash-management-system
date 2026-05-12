@@ -15,11 +15,22 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+// Allow the frontend dev servers to call the backend (CORS)
+// Your frontend is commonly served by Vite on different ports (5173/5174).
+// We allow both in dev to prevent CORS origin mismatch errors.
+const CLIENT_URLS = (process.env.CLIENT_URLS || "http://localhost:5173,http://localhost:5174")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 
 app.use(
   cors({
-    origin: CLIENT_URL,
+    origin: (origin, cb) => {
+      // Allow non-browser requests (no Origin header)
+      if (!origin) return cb(null, true);
+      if (CLIENT_URLS.includes(origin)) return cb(null, true);
+      return cb(new Error(`Not allowed by CORS: ${origin}`));
+    },
     credentials: true,
   })
 );
