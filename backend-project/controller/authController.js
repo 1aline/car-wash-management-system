@@ -7,7 +7,7 @@ async function register(req, res) {
     if (!username || !password) {
       return res.status(400).json({ message: "Username and password are required" });
     }
-    if (password.length > 8) {
+    if (password.length < 8) {
       return res.status(400).json({ message: "Password must be at least 8 characters" });
     }
 
@@ -34,7 +34,7 @@ async function login(req, res) {
   if (!ok) {
     return res.status(401).json({ message: "Invalid username or password" });
   }
-  req.session.user = { username };
+  req.session.user = { id: user._id.toString(), username };
   return res.json({ message: "Login successful", user: { username } });
 }
 

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const paymentSchema = new mongoose.Schema(
   {
-    paymentNumber: { type: String, required: true, unique: true, trim: true },
+    paymentNumber: { type: String, required: true, trim: true },
     amountPaid: { type: Number, required: true, min: 0 },
     paymentDate: { type: Date, required: true },
     serviceRecord: {
@@ -10,6 +10,7 @@ const paymentSchema = new mongoose.Schema(
       ref: "ServicePackage",
       required: true,
     },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
 );

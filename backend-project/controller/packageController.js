@@ -1,7 +1,10 @@
 const Package = require("../models/Package");
+const generateSequence = require("../utils/generateSequence");
 
 async function createPackage(req, res) {
   try {
+    req.body.user = req.session.user.id;
+    req.body.packageNumber = await generateSequence("package", "PKG");
     const pkg = await Package.create(req.body);
     res.status(201).json(pkg);
   } catch (error) {
@@ -10,7 +13,9 @@ async function createPackage(req, res) {
 }
 
 async function getPackages(req, res) {
-  const packages = await Package.find().sort({ createdAt: -1 });
+  const packages = await Package.find({
+    $or: [{ user: req.session.user.id }, { user: { $exists: false } }, { user: null }],
+  }).sort({ createdAt: -1 });
   res.json(packages);
 }
 
